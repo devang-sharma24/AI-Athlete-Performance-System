@@ -3,102 +3,103 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI Athlete Performance Evaluation System</title>
+<title>AI-Based Real-Time Athlete Performance Evaluation System</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 
 <style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Poppins', sans-serif;
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
 }
 
-body {
-    background: #0b1020;
-    color: white;
-    scroll-behavior: smooth;
+body{
+background:#0b1020;
+color:white;
+scroll-behavior:smooth;
 }
 
-header {
-    background: #111a33;
-    padding: 20px 10%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+header{
+background:#111a33;
+padding:20px 10%;
+display:flex;
+justify-content:space-between;
+align-items:center;
 }
 
-header h1 {
-    font-size: 18px;
-    color: #4ea8ff;
+header h1{
+font-size:18px;
+color:#4ea8ff;
 }
 
-nav a {
-    margin-left: 20px;
-    text-decoration: none;
-    color: white;
-    font-size: 14px;
+nav a{
+margin-left:20px;
+text-decoration:none;
+color:white;
+font-size:14px;
 }
 
-section {
-    padding: 80px 10%;
+section{
+padding:90px 10%;
 }
 
-.hero {
-    text-align: center;
+.hero{
+text-align:center;
 }
 
-.hero h2 {
-    font-size: 48px;
-    background: linear-gradient(90deg,#4ea8ff,#b517ff);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin-bottom: 20px;
+.hero h2{
+font-size:48px;
+background:linear-gradient(90deg,#4ea8ff,#b517ff);
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+margin-bottom:20px;
 }
 
-.hero p {
-    max-width: 800px;
-    margin: auto;
-    font-size: 18px;
-    opacity: 0.8;
+.hero p{
+max-width:900px;
+margin:auto;
+font-size:18px;
+opacity:0.85;
 }
 
-.card {
-    background: #151f3b;
-    padding: 30px;
-    border-radius: 15px;
-    margin-top: 30px;
-    box-shadow: 0 0 20px rgba(0,0,0,0.4);
+.card{
+background:#151f3b;
+padding:30px;
+border-radius:15px;
+margin-top:30px;
+box-shadow:0 0 20px rgba(0,0,0,0.4);
 }
 
-.card h3 {
-    color: #4ea8ff;
-    margin-bottom: 15px;
+.card h3{
+color:#4ea8ff;
+margin-bottom:15px;
 }
 
-.grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
-    gap: 20px;
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+gap:25px;
 }
 
-.button {
-    display: inline-block;
-    padding: 12px 25px;
-    background: #4ea8ff;
-    color: black;
-    border-radius: 8px;
-    text-decoration: none;
-    margin-top: 20px;
-    font-weight: 600;
+.button{
+display:inline-block;
+padding:12px 25px;
+background:#4ea8ff;
+color:black;
+border-radius:8px;
+text-decoration:none;
+margin-top:20px;
+font-weight:600;
 }
 
-footer {
-    text-align: center;
-    padding: 40px;
-    background: #111a33;
-    margin-top: 50px;
+footer{
+text-align:center;
+padding:40px;
+background:#111a33;
+margin-top:60px;
+font-size:14px;
 }
 </style>
 </head>
@@ -115,99 +116,93 @@ footer {
 </nav>
 </header>
 
-<!-- HERO -->
 <section class="hero">
 <h2>AI-Based Real-Time Athlete Performance Evaluation System</h2>
 <p>
-This project presents an AI-powered system that automatically detects and evaluates athlete performance 
-using real-time pose estimation and computer vision techniques.
+An intelligent computer vision system that automatically detects sit-up repetitions using 
+MediaPipe Pose estimation and evaluates athlete performance through age-normalized AI scoring, 
+grading classification, and statistical analytics.
 </p>
 </section>
 
-<!-- PROBLEM -->
 <section id="problem">
 <div class="grid">
 
 <div class="card">
 <h3>Problem Statement</h3>
 <p>
-Traditional fitness evaluation relies on manual counting and supervision, 
-which may be inaccurate and inconsistent. There is a need for an automated, 
-real-time, objective system to evaluate athlete performance using AI.
+Traditional fitness assessment depends on manual supervision and counting, 
+which can be inconsistent, subjective, and time-consuming. There is a need 
+for an automated, real-time evaluation system that provides objective and 
+data-driven athlete performance analysis.
 </p>
 </div>
 
 <div class="card">
 <h3>Literature Review</h3>
 <p>
-Recent research in pose estimation (MediaPipe, OpenCV) demonstrates 
-real-time human skeleton tracking. However, most existing solutions 
-only count repetitions and do not provide structured AI-based performance evaluation.
+Modern pose estimation frameworks such as MediaPipe and OpenCV enable 
+real-time skeleton tracking. However, most existing systems focus only 
+on repetition counting and lack structured AI-based performance evaluation 
+with benchmarking and analytics.
 </p>
 </div>
 
 <div class="card">
 <h3>Research Gap & Innovation</h3>
 <p>
-Existing systems lack intelligent benchmarking and analytics. 
 Our system introduces:
-<br>• Age-normalized performance scoring  
-<br>• AI-based evaluation grading  
+<br>• Age-based performance benchmarking  
+<br>• AI performance scoring model  
+<br>• Fitness grade classification  
 <br>• Real-time motion detection  
-<br>• Performance database & dashboard  
+<br>• SQLite-based performance database  
+<br>• Statistical analytics dashboard  
 </p>
 </div>
 
 </div>
 </section>
 
-<!-- METHODOLOGY -->
 <section id="methodology">
 <h2 style="text-align:center;margin-bottom:40px;">System Methodology</h2>
 
 <div class="grid">
 
 <div class="card">
-<h3>Dataset / Input</h3>
+<h3>Data Acquisition</h3>
 <p>
-• Real-time webcam video feed  
-<br>• Human pose landmarks using MediaPipe  
-<br>• Joint coordinate extraction  
+• Live webcam video feed  
+<br>• OpenCV frame processing  
+<br>• MediaPipe Pose landmark detection  
 </p>
 </div>
 
 <div class="card">
-<h3>Model / Architecture</h3>
+<h3>Rep Detection Logic</h3>
 <p>
-• OpenCV for video capture  
-<br>• MediaPipe Pose for skeleton detection  
-<br>• Motion threshold algorithm for sit-up counting  
-<br>• AI-based scoring logic  
-<br>• SQLite database storage  
-<br>• Streamlit dashboard for visualization  
+• Shoulder–Hip coordinate extraction  
+<br>• Motion threshold comparison  
+<br>• State transition logic (Up / Down)  
+<br>• Automatic repetition counting  
 </p>
 </div>
 
 <div class="card">
-<h3>Live Execution</h3>
+<h3>AI Evaluation Module</h3>
 <p>
-The system processes live webcam frames, detects body motion, 
-calculates repetition count, generates AI performance score, 
-and stores the results for analysis.
+• Age-normalized benchmark calculation  
+<br>• Percentage performance computation  
+<br>• AI score generation (0–150 scale)  
+<br>• Grade classification (Excellent / Good / Average / Needs Improvement)  
+<br>• Result storage in SQLite database  
 </p>
-
-<a href="https://github.com/devang-sharma24/AI-Athlete-Performance-System" 
-   class="button" 
-   target="_blank">
-   View Project Repository
-</a>
-
+<a href="https://github.com/devang-sharma24/AI-Athlete-Performance-System" class="button">View Project Repository</a>
 </div>
 
 </div>
 </section>
 
-<!-- RESULTS -->
 <section id="results">
 <h2 style="text-align:center;margin-bottom:40px;">Results & Analysis</h2>
 
@@ -216,27 +211,28 @@ and stores the results for analysis.
 <div class="card">
 <h3>Performance Accuracy</h3>
 <p style="font-size:28px;font-weight:bold;color:#4ea8ff;">
-92% Rep Counting Accuracy
+92% Sit-Up Counting Accuracy
 </p>
 <p>
-Tested against manual baseline counting under controlled conditions.
-</p>
-</div>
-
-<div class="card">
-<h3>System Evaluation</h3>
-<p>
-• Real-time detection achieved stable performance  
-<br>• AI scoring classified athletes into performance categories  
-<br>• Database maintained historical performance records  
-<br>• Dashboard enabled visual analytics  
+Validated against manual counting baseline under controlled testing conditions.
 </p>
 </div>
 
 <div class="card">
-<h3>Future Scope</h3>
+<h3>System Output</h3>
 <p>
-• Multi-exercise detection (pushups, squats)  
+• Real-time repetition detection  
+<br>• AI performance score display  
+<br>• Automatic grade assignment  
+<br>• Historical data tracking  
+<br>• Dashboard analytics (Average & Best Performance)  
+</p>
+</div>
+
+<div class="card">
+<h3>Future Enhancements</h3>
+<p>
+• Multi-exercise detection (Push-ups, Squats)  
 <br>• Deep learning-based posture correction  
 <br>• Cloud-based athlete analytics  
 <br>• Mobile application integration  
@@ -246,7 +242,6 @@ Tested against manual baseline counting under controlled conditions.
 </div>
 </section>
 
-<!-- TEAM -->
 <section id="team">
 <h2 style="text-align:center;margin-bottom:40px;">Academic Credits</h2>
 
@@ -272,4 +267,3 @@ Manipal University Jaipur | Department of Computer Science & Engineering | 2026
 
 </body>
 </html>
-
