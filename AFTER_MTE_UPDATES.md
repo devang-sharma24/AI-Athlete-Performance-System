@@ -60,20 +60,6 @@ After the MTE, several important upgrades were implemented to improve system acc
   - Loop video  
   - AI-generated motion  
 
----
-
-## 🎯 Summary of Improvements
-
-| Feature | Before MTE | After MTE |
-|--------|-----------|----------|
-| Exercises | Sit-ups only | Sit-ups + Push-ups |
-| Detection | Basic motion | Angle-based |
-| Accuracy | Medium | High |
-| Posture Score | ❌ | ✅ |
-| Fraud Detection | ❌ | ✅ |
-
----
-
 ## 🚀 Outcome
 
 The system evolved from a **basic repetition counter** to a **complete AI-based athlete performance evaluation system**.
