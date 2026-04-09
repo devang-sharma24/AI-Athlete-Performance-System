@@ -1,209 +1,296 @@
-# ==========================================
-# AI Sports Athlete Management System
-# Enhanced Evaluation Version (Stable)
-# ==========================================
-
 import streamlit as st
 import cv2
 import mediapipe as mp
+import numpy as np
 import sqlite3
 import pandas as pd
 from datetime import datetime
 
-# -------------------------
-# Database Setup
-# -------------------------
-conn = sqlite3.connect("athletes.db", check_same_thread=False)
+# CONFIG
+st.set_page_config(layout="wide")
+
+mp_pose = mp.solutions.pose
+mp_draw = mp.solutions.drawing_utils
+
+# DATABASE
+conn = sqlite3.connect("fitness.db", check_same_thread=False)
 c = conn.cursor()
 
 c.execute("""
-CREATE TABLE IF NOT EXISTS results(
+CREATE TABLE IF NOT EXISTS results (
     name TEXT,
-    age INT,
-    reps INT,
+    age INTEGER,
+    reps INTEGER,
     grade TEXT,
     date TEXT
 )
 """)
+
+# Safe column add
+try:
+    c.execute("ALTER TABLE results ADD COLUMN posture REAL")
+except:
+    pass
+
 conn.commit()
 
-# -------------------------
-# Helper Functions
-# -------------------------
-def save_result(name, age, reps, grade):
-    c.execute("INSERT INTO results VALUES (?, ?, ?, ?, ?)",
-              (name, age, reps, grade, str(datetime.now())))
-    conn.commit()
+# UTIL
+def calculate_angle(a, b, c):
+    a = np.array(a)
+    b = np.array(b)
+    c = np.array(c)
 
-def calculate_ai_score(age, reps):
+    radians = np.arctan2(c[1]-b[1], c[0]-b[0]) - np.arctan2(a[1]-b[1], a[0]-b[0])
+    angle = np.abs(radians * 180.0 / np.pi)
 
-    if age <= 12:
-        expected = 15
-    elif age <= 18:
-        expected = 25
+    if angle > 180:
+        angle = 360 - angle
+
+    return angle
+
+def get_grade(reps):
+    if reps >= 20:
+        return "Excellent"
+    elif reps >= 15:
+        return "Good"
+    elif reps >= 10:
+        return "Average"
     else:
-        expected = 20
+        return "Needs Improvement"
 
-    percentage = (reps / expected) * 100
+# FIXED FRAUD DETECTION
+def detect_fraud(angle_history, frame, prev_frame, freeze_counter):
 
-    if percentage >= 120:
-        grade = "Elite"
-    elif percentage >= 90:
-        grade = "Strong"
-    elif percentage >= 60:
-        grade = "Average"
-    else:
-        grade = "Beginner"
+    fraud = False
 
-    ai_score = min(int(percentage), 150)
+    if prev_frame is not None:
+        diff = cv2.absdiff(prev_frame, frame)
+        motion_score = np.sum(diff)
 
-    return ai_score, grade
+        if motion_score < 50000:
+            freeze_counter += 1
+        else:
+            freeze_counter = 0
 
-# -------------------------
-# MediaPipe Setup
-# -------------------------
-mp_pose = mp.solutions.pose
-pose = mp_pose.Pose()
-mp_draw = mp.solutions.drawing_utils
+        if freeze_counter > 80:
+            fraud = True
 
-# -------------------------
-# Sit-up Counter (UNCHANGED)
-# -------------------------
+    if len(angle_history) > 30:
+        if np.std(angle_history[-30:]) < 1.0:
+            fraud = True
+
+    return fraud, freeze_counter
+
+# SITUPS
 def count_situps():
-
     cap = cv2.VideoCapture(0)
 
     counter = 0
     stage = None
+    correct = 0
+    frames = 0
 
-    print("Press Q to stop the test.")
+    angle_history = []
+    prev_frame = None
+    freeze_counter = 0
+    fraud_flag = False
 
-    while True:
+    with mp_pose.Pose() as pose:
 
-        ret, frame = cap.read()
-        if not ret:
-            break
+        while True:
+            ret, frame = cap.read()
+            if not ret:
+                break
 
-        image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        results = pose.process(image)
+            frames += 1
 
-        if results.pose_landmarks:
-            lm = results.pose_landmarks.landmark
+            image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            results = pose.process(image)
 
-            shoulder_y = lm[mp_pose.PoseLandmark.LEFT_SHOULDER].y
-            hip_y = lm[mp_pose.PoseLandmark.LEFT_HIP].y
+            if results.pose_landmarks:
+                lm = results.pose_landmarks.landmark
 
-            diff = hip_y - shoulder_y
+                shoulder = [lm[11].x, lm[11].y]
+                hip = [lm[23].x, lm[23].y]
+                knee = [lm[25].x, lm[25].y]
 
-            if diff > 0.20:
-                stage = "down"
+                angle = calculate_angle(shoulder, hip, knee)
+                angle_history.append(angle)
 
-            if diff < 0.18 and stage == "down":
-                stage = "up"
-                counter += 1
+                fraud, freeze_counter = detect_fraud(angle_history, frame, prev_frame, freeze_counter)
+                if fraud:
+                    fraud_flag = True
 
-            mp_draw.draw_landmarks(
-                frame,
-                results.pose_landmarks,
-                mp_pose.POSE_CONNECTIONS
-            )
+                if angle > 150:
+                    stage = "down"
 
-        cv2.putText(frame, f"Situps: {counter}", (20, 60),
-                    cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 255, 0), 3)
+                if angle < 100 and stage == "down":
+                    stage = "up"
+                    counter += 1
 
-        cv2.imshow("Sit-up Counter", frame)
+                if 70 < angle < 120:
+                    correct += 1
 
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
+                mp_draw.draw_landmarks(frame, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
+
+            prev_frame = frame.copy()
+
+            cv2.putText(frame, f"Sit-ups: {counter}", (20, 50),
+                        cv2.FONT_HERSHEY_SIMPLEX, 1.2, (255, 0, 0), 2)
+
+            if fraud_flag:
+                cv2.putText(frame, "FRAUD DETECTED", (20, 100),
+                            cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
+
+            cv2.imshow("Sit-ups", frame)
+
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
 
     cap.release()
     cv2.destroyAllWindows()
 
-    return counter
+    posture = (correct / frames) * 100 if frames else 0
+    return counter, posture, fraud_flag
 
-# -------------------------
-# Streamlit UI
-# -------------------------
-st.title("🏃 AI Athlete Performance Evaluation System")
+# PUSHUPS
+def count_pushups():
+    cap = cv2.VideoCapture(0)
 
+    counter = 0
+    stage = None
+    correct = 0
+    frames = 0
+
+    angle_history = []
+    prev_frame = None
+    freeze_counter = 0
+    fraud_flag = False
+
+    with mp_pose.Pose() as pose:
+
+        while True:
+            ret, frame = cap.read()
+            if not ret:
+                break
+
+            frames += 1
+
+            image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            results = pose.process(image)
+
+            if results.pose_landmarks:
+                lm = results.pose_landmarks.landmark
+
+                shoulder = [lm[11].x, lm[11].y]
+                elbow = [lm[13].x, lm[13].y]
+                wrist = [lm[15].x, lm[15].y]
+
+                angle = calculate_angle(shoulder, elbow, wrist)
+                angle_history.append(angle)
+
+                fraud, freeze_counter = detect_fraud(angle_history, frame, prev_frame, freeze_counter)
+                if fraud:
+                    fraud_flag = True
+
+                if angle > 160:
+                    stage = "up"
+
+                if angle < 90 and stage == "up":
+                    stage = "down"
+                    counter += 1
+
+                if 80 < angle < 120:
+                    correct += 1
+
+                mp_draw.draw_landmarks(frame, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
+
+            prev_frame = frame.copy()
+
+            cv2.putText(frame, f"Push-ups: {counter}", (20, 50),
+                        cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0, 255, 0), 2)
+
+            if fraud_flag:
+                cv2.putText(frame, "FRAUD DETECTED", (20, 100),
+                            cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
+
+            cv2.imshow("Push-ups", frame)
+
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
+
+    cap.release()
+    cv2.destroyAllWindows()
+
+    posture = (correct / frames) * 100 if frames else 0
+    return counter, posture, fraud_flag
+
+# UI
 menu = st.sidebar.selectbox("Menu", ["Test", "Dashboard"])
 
-# -------------------------
-# TEST PAGE
-# -------------------------
+st.title("🏃 AI Athlete Performance Evaluation System")
+
+# TEST
 if menu == "Test":
 
-    st.header("Sit-Up Performance Test")
+    st.header("Performance Test")
 
-    name = st.text_input("Name")
-    age = st.number_input("Age", 10, 60)
+    col1, col2 = st.columns(2)
+
+    with col1:
+        name = st.text_input("Name")
+        age = st.number_input("Age", 10, 60)
+
+    with col2:
+        exercise = st.selectbox("Exercise", ["Sit-ups", "Push-ups"])
 
     if st.button("Start Test"):
 
-        if name == "":
-            st.warning("Please enter your name.")
+        if not name:
+            st.warning("Enter name first")
+
         else:
-            reps = count_situps()
-
-            if reps > 0:
-
-                ai_score, grade = calculate_ai_score(age, reps)
-
-                save_result(name, age, reps, grade)
-
-                st.success(f"Total Reps: {reps}")
-                st.info(f"AI Performance Score: {ai_score}/100")
-                st.info(f"Fitness Grade: {grade}")
-
+            if exercise == "Sit-ups":
+                reps, posture, fraud = count_situps()
             else:
-                st.error("No reps detected. Try again.")
+                reps, posture, fraud = count_pushups()
 
-# -------------------------
-# DASHBOARD PAGE
-# -------------------------
-if menu == "Dashboard":
+            grade = get_grade(reps)
+
+            if fraud:
+                grade = "Fraud Detected"
+
+            c.execute("""
+            INSERT INTO results (name, age, reps, grade, posture, date)
+            VALUES (?, ?, ?, ?, ?, ?)
+            """, (name, age, reps, grade, posture, str(datetime.now())))
+
+            conn.commit()
+
+            st.success(f"{exercise} Completed: {reps} reps")
+            st.info(f"Posture Score: {round(posture,2)}%")
+            st.warning(f"Status: {grade}")
+
+# DASHBOARD
+elif menu == "Dashboard":
 
     st.header("Athlete Performance Dashboard")
 
-    df = pd.read_sql_query(
-        "SELECT * FROM results ORDER BY date DESC",
-        conn
-    )
+    df = pd.read_sql_query("SELECT * FROM results", conn)
 
-    if len(df) > 0:
+    st.dataframe(df)
 
-        st.dataframe(df)
+    if not df.empty:
 
         st.subheader("Performance Analytics")
 
-        total_tests = len(df)
-        avg_reps = df["reps"].mean()
-        best_reps = df["reps"].max()
-
         col1, col2, col3 = st.columns(3)
+        col1.metric("Total Tests", len(df))
+        col2.metric("Average Reps", round(df["reps"].mean(), 2))
+        col3.metric("Best Performance", df["reps"].max())
 
-        col1.metric("Total Tests", total_tests)
-        col2.metric("Average Reps", round(avg_reps, 2))
-        col3.metric("Best Performance", best_reps)
+        st.subheader("Grade Distribution")
+        st.bar_chart(df["grade"].value_counts())
 
-        st.divider()
-
-        st.subheader("🏆 Top 5 Performers")
-        top5 = df.sort_values(by="reps", ascending=False).head(5)
-        st.dataframe(top5)
-
-        st.divider()
-
-        athlete = st.selectbox("Select Athlete", df["name"].unique())
-        athlete_data = df[df["name"] == athlete]
-
-        st.subheader(f"{athlete}'s Progress Over Time")
-        st.line_chart(athlete_data["reps"])
-
-        st.divider()
-
-        st.subheader("Overall Repetition Distribution")
-        st.bar_chart(df["reps"])
-
-    else:
-        st.write("No data yet.")
+        st.subheader("Leaderboard")
+        st.dataframe(df.sort_values(by="reps", ascending=False).head(5))
