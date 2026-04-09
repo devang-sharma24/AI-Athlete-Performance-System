@@ -1,33 +1,37 @@
-🏃 AI Athlete Performance Evaluation System
+# 🏃 AI Athlete Performance Evaluation System
 
-📌 Project Overview
+## 📌 Project Overview
 
 This project is an AI-based system that evaluates athlete performance using real-time pose estimation. It detects exercises like sit-ups and push-ups using computer vision and provides performance analytics.
 
-🚀 Features
+---
 
- ✅ Real-time exercise detection (Sit-ups & Push-ups)
- ✅ Angle-based motion analysis using MediaPipe
- ✅ Posture correctness scoring
- ✅ Automated repetition counting
- ✅ Fraud detection system (anti-cheating)
- ✅ Performance grading system
- ✅ Dashboard with analytics & leaderboard
- ✅ SQLite database integration
+## 🚀 Features
 
+* ✅ Real-time exercise detection (Sit-ups & Push-ups)
+* ✅ Angle-based motion analysis using MediaPipe
+* ✅ Posture correctness scoring
+* ✅ Automated repetition counting
+* ✅ Fraud detection system (anti-cheating)
+* ✅ Performance grading system
+* ✅ Dashboard with analytics & leaderboard
+* ✅ SQLite database integration
 
- 🧠 Technologies Used
+---
 
- Python
- OpenCV
- MediaPipe
- Streamlit
- SQLite
- NumPy
- Pandas
+## 🧠 Technologies Used
 
+* Python
+* OpenCV
+* MediaPipe
+* Streamlit
+* SQLite
+* NumPy
+* Pandas
 
- ⚙️ How It Works
+---
+
+## ⚙️ How It Works
 
 1. Webcam captures live video
 2. MediaPipe detects body landmarks
@@ -37,42 +41,49 @@ This project is an AI-based system that evaluates athlete performance using real
 6. Fraud detection checks abnormal patterns
 7. Results are stored and displayed in dashboard
 
+---
 
-
-🛡️ Fraud Detection
+## 🛡️ Fraud Detection
 
 The system detects cheating using:
 
- Frame freeze detection (no movement)
- Motion analysis (frame difference)
- Angle consistency check (detects fake repetitive motion)
+* Frame freeze detection (no movement)
+* Motion analysis (frame difference)
+* Angle consistency check (detects fake repetitive motion)
 
+---
 
+## 📊 Output
 
-📊 Output
+* Repetition count
+* Posture score (%)
+* Performance grade
+* Dashboard analytics
 
- Repetition count
- Posture score (%)
- Performance grade
- Dashboard analytics
+---
 
+## ▶️ Run the Project
 
-
-▶️ Run the Project
-
+```bash
 streamlit run app.py
+```
 
-👨‍💻 Author
+---
 
-Devang Sharma
-Registration No: 2427030731
+## 👨‍💻 Author
 
+* Devang Sharma
+* Registration No: 2427030731
 
-🎓 Mentor
+---
 
-Dr. Mayank Namdev
+## 🎓 Mentor
 
-🏫 Institution
+* Dr. Mayank Namdev
+
+---
+
+## 🏫 Institution
 
 Manipal University Jaipur
 Department of Computer Science & Engineering
